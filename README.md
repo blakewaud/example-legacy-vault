@@ -1,14 +1,5 @@
-# Template: Robot Framework - Minimal
+# Legacy Vault Example
 
-This is the simplest template to start from.
+This robot is an example that utilizes an extended version of the `Vault` library that allows for the use of a legacy SSL context. This is required in environments and robots that requires Python >=3.10 and OpenSSL 1.1.1 style renegotiation.
 
-- Get started from a simple task template in `tasks.robot`.
-  - Uses [Robot Framework](https://robocorp.com/docs/languages-and-frameworks/robot-framework/basics) syntax.
-- You can configure your robot `robot.yaml`.
-- You can configure dependencies in `conda.yaml`.
-
-## Learning materials
-
-- [Robocorp Developer Training Courses](https://robocorp.com/docs/courses)
-- [Documentation links on Robot Framework](https://robocorp.com/docs/languages-and-frameworks/robot-framework)
-- [Example bots in Robocorp Portal](https://robocorp.com/portal)
+This example is particularly useful in situations where you want to use the `truststore` solution to inject OS certificates into your robot but your enterprise firewall will not allow connections and your robot fails with the error `UNSAFE_LEGACY_RENEGOTIATION_DISABLED`.
