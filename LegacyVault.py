@@ -2,9 +2,12 @@ import requests
 import urllib3
 import ssl
 import traceback
+import logging
 from cryptography.exceptions import InvalidTag
+from robot.libraries.BuiltIn import BuiltIn, RobotNotRunningError
 
 from RPA.Robocorp.Vault import Vault, RobocorpVault, RobocorpVaultError, Secret
+from RPA.core.helpers import required_env
 
 
 class CustomHttpAdapter(requests.adapters.HTTPAdapter):
@@ -127,10 +130,34 @@ class LegacyVault(Vault):
     in an environment that requires Python >=3.10 but also requires
     OpenSSL 1.1.1v style TLS connections. The full `Vault` documentation
     is included here for convenience.
-    
+
     {Vault.__doc__}
     """
 
     def __init__(self, *args, **kwargs):
-        default = kwargs.pop("default_adapter", LegacyRobocorpVault)
-        super().__init__(*args, default_adapter=default, **kwargs)
+        """The selected adapter can be set with the environment variable
+        ``RPA_SECRET_MANAGER``, or the keyword argument ``default_adapter``.
+        Defaults to Robocorp Vault if not defined.
+
+        All other library arguments are passed to the adapter.
+
+        :param default_adapter: Override default secret adapter
+        :param disable_listener: Disable log listener. Defaults to False.
+            Disabling the listener is useful when using the library in
+            debug mode, as the listener will otherwise cause keywords
+            in this library to be hidden from the log.
+        """
+        self.logger = logging.getLogger(__name__)
+
+        default = kwargs.pop("default_adapter", RobocorpVault)
+        adapter = required_env("RPA_SECRET_MANAGER", default)
+
+        self._adapter_factory = self._create_factory(adapter, args, kwargs)
+        self._adapter = None
+
+        if kwargs.pop("disable_listener", False):
+            return
+        try:
+            BuiltIn().import_library("RPA.RobotLogListener")
+        except RobotNotRunningError:
+            pass

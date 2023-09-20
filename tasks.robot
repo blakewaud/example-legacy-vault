@@ -9,7 +9,7 @@ Documentation       This robot is an example that utilizes an extended version o
 ...                 enterprise firewall will not allow connections and your robot fails with the
 ...                 error `UNSAFE_LEGACY_RENEGOTIATION_DISABLED`.
 
-Library             LegacyVault
+Library             LegacyVault    disable_listener=${True}
 
 
 *** Variables ***
